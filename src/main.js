@@ -1,6 +1,8 @@
-import {getFilter as makeFilter} from './make-filter';
+import {getFilter} from './make-filter';
 import makeTask from './make-task';
 
+const MIN_CARDS = 1;
+const MAX_CARDS = 10;
 const filterList = [
   {name: `All`,
     class: `all`,
@@ -45,22 +47,36 @@ const card = {
   isDeadlined: false
 };
 
-const filters = document.querySelector(`.main__filter`);
+const filtersContainer = document.querySelector(`.main__filter`);
 const tasksContainer = document.querySelector(`.board__tasks`);
 const clearField = function (container) {
   while (container.firstChild) {
     container.firstChild.remove();
   }
 };
+const getRandomNumber = (min, max) => Math.round(min - 0.5 + Math.random() * (max - min + 1));
 
+const generateCards = function () {
+  const cardsAmount = getRandomNumber(MIN_CARDS, MAX_CARDS);
+  clearField(tasksContainer);
+  for (let i = 0; i < cardsAmount; i++) {
+    tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(card));
+  }
+};
 
-clearField(filters);
+clearField(filtersContainer);
 filterList.forEach(function (filter) {
-  filters.insertAdjacentHTML(`beforeEnd`, makeFilter(filter));
+  filtersContainer.insertAdjacentHTML(`beforeEnd`, getFilter(filter));
 });
-
 
 clearField(tasksContainer);
 for (let i = 0; i < 7; i++) {
   tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(card));
 }
+
+const filters = document.querySelectorAll(`.main__filter label`);
+filters.forEach(function (filter) {
+  filter.addEventListener(`click`, function () {
+    generateCards();
+  });
+});
