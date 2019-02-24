@@ -1,9 +1,9 @@
 export default (card) => `
   <article class="card
        card--${card.color}
-       ${card.isEdited ? 'card--edit' : ''}
-       ${card.isRepeated ? 'card--repeat' : ''}
-       ${card.isDeadlined ? 'card--deadline' : ''}">
+       ${card.isEdited ? `card--edit` : ``}
+       ${card.isRepeated ? `card--repeat` : ``}
+       ${card.isDeadlined ? `card--deadline` : ``}">
     <form class="card__form" method="get">
       <div class="card__inner">
         <div class="card__control">
