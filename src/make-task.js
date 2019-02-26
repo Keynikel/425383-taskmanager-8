@@ -1,9 +1,7 @@
-export default (card) => `
+export default (task) => `
   <article class="card
-       card--${card.color}
-       ${card.isEdited ? `card--edit` : ``}
-       ${card.isRepeated ? `card--repeat` : ``}
-       ${card.isDeadlined ? `card--deadline` : ``}">
+       card--${task.color}
+       }">
     <form class="card__form" method="get">
       <div class="card__inner">
         <div class="card__control">
@@ -31,7 +29,7 @@ export default (card) => `
               class="card__text"
               placeholder="Start typing your text here..."
               name="text"
-            ></textarea
+            >${task.title}</textarea
             >
           </label>
         </div>
@@ -204,7 +202,7 @@ export default (card) => `
               name="img"
             />
             <img
-              src="img/sample-img.jpg"
+              src="${task.picture}"
               alt="task picture"
               class="card__img"
             />

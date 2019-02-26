@@ -1,5 +1,6 @@
 import {getFilter} from './make-filter';
 import makeTask from './make-task';
+import {task} from './data.js'
 
 const MIN_CARDS = 1;
 const MAX_CARDS = 10;
@@ -40,13 +41,6 @@ const filterList = [
     state: ``}
 ];
 
-const card = {
-  color: `blue`,
-  isEdited: false,
-  isRepeated: true,
-  isDeadlined: false
-};
-
 const filtersContainer = document.querySelector(`.main__filter`);
 const tasksContainer = document.querySelector(`.board__tasks`);
 const clearField = function (container) {
@@ -54,7 +48,6 @@ const clearField = function (container) {
     container.firstChild.remove();
   }
 };
-const getRandomNumber = (min, max) => Math.round(min - 0.5 + Math.random() * (max - min + 1));
 
 const generateCards = function () {
   const cardsAmount = getRandomNumber(MIN_CARDS, MAX_CARDS);
@@ -71,7 +64,7 @@ filterList.forEach(function (filter) {
 
 clearField(tasksContainer);
 for (let i = 0; i < 7; i++) {
-  tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(card));
+  tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(task));
 }
 
 const filters = document.querySelectorAll(`.main__filter label`);
