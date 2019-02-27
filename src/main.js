@@ -1,6 +1,7 @@
 import {getFilter} from './make-filter';
 import makeTask from './make-task';
-import {getTask} from './get-task.js'
+import {getTask} from './get-task.js';
+import {getRandomNumber} from './additional.js';
 
 const MIN_CARDS = 1;
 const MAX_CARDS = 10;
@@ -50,13 +51,15 @@ const clearField = function (container) {
 };
 const tasksList = []; // здесь будет массив тасков
 
-// const generateCards = function () {
-//   const cardsAmount = getRandomNumber(MIN_CARDS, MAX_CARDS);
-//   clearField(tasksContainer);
-//   for (let i = 0; i < cardsAmount; i++) {
-//     tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(card));
-//   }
-// };
+const generateCards = function () {
+  const cardsAmount = getRandomNumber(MIN_CARDS, MAX_CARDS);
+  const tasksList = [];
+  for (let i = 0; i < cardsAmount; i++) {
+    tasksList.push(getTask());
+  }
+  clearField(tasksContainer);
+  tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(tasksList));
+};
 
 clearField(filtersContainer);
 filterList.forEach(function (filter) {
