@@ -39,8 +39,8 @@ export const getTask = () => ({
     'sa': false,
     'su': false,
   },
-  isFavorite: true,
-  isDone: false,
+  isFavorite: getRandomNumber(0,1) ? 'true' : false,
+  isDone: getRandomNumber(0,1) ? 'true' : false,
   get deadlineDate() {
     const date = new Date(this.dueDate);
     const options = {day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' };

@@ -48,6 +48,7 @@ const clearField = function (container) {
     container.firstChild.remove();
   }
 };
+const tasksList = []; // здесь будет массив тасков
 
 // const generateCards = function () {
 //   const cardsAmount = getRandomNumber(MIN_CARDS, MAX_CARDS);
@@ -64,8 +65,10 @@ filterList.forEach(function (filter) {
 
 clearField(tasksContainer);
 for (let i = 0; i < 7; i++) {
-  tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(getTask()));
+  tasksList.push(getTask()); // Нам потребуется еще одна структура, которая описывает все таски. Мы будем использовать для этого обычный массив. Просто и понятно.
 }
+
+tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(tasksList)); // функция makeTask должна работать с массивом, содержащим все таски
 
 const filters = document.querySelectorAll(`.main__filter label`);
 filters.forEach(function (filter) {
