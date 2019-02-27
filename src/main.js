@@ -1,6 +1,6 @@
 import {getFilter} from './make-filter';
 import makeTask from './make-task';
-import {task} from './data.js'
+import {getTask} from './get-task.js'
 
 const MIN_CARDS = 1;
 const MAX_CARDS = 10;
@@ -49,13 +49,13 @@ const clearField = function (container) {
   }
 };
 
-const generateCards = function () {
-  const cardsAmount = getRandomNumber(MIN_CARDS, MAX_CARDS);
-  clearField(tasksContainer);
-  for (let i = 0; i < cardsAmount; i++) {
-    tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(card));
-  }
-};
+// const generateCards = function () {
+//   const cardsAmount = getRandomNumber(MIN_CARDS, MAX_CARDS);
+//   clearField(tasksContainer);
+//   for (let i = 0; i < cardsAmount; i++) {
+//     tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(card));
+//   }
+// };
 
 clearField(filtersContainer);
 filterList.forEach(function (filter) {
@@ -64,7 +64,7 @@ filterList.forEach(function (filter) {
 
 clearField(tasksContainer);
 for (let i = 0; i < 7; i++) {
-  tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(task));
+  tasksContainer.insertAdjacentHTML(`beforeEnd`, makeTask(getTask()));
 }
 
 const filters = document.querySelectorAll(`.main__filter label`);

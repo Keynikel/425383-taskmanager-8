@@ -1,6 +1,7 @@
 export default (task) => `
   <article class="card
        card--${task.color}
+       ${task.isDeadlined ? 'card--deadline' : ''}
        }">
     <form class="card__form" method="get">
       <div class="card__inner">
@@ -13,7 +14,7 @@ export default (task) => `
           </button>
           <button
             type="button"
-            class="card__btn card__btn--favorites card__btn--disabled"
+            class="card__btn card__btn--favorites ${task.isFavorite ? 'card__btn--disabled' : ''} "
           >
             favorites
           </button>
@@ -44,18 +45,18 @@ export default (task) => `
                   <input
                     class="card__date"
                     type="text"
-                    placeholder="23 September"
+                    placeholder="${task.deadlineDate[0]}"
                     name="date"
-                    value="23 September"
+                    value="${task.deadlineDate[0]}"
                   />
                 </label>
                 <label class="card__input-deadline-wrap">
                   <input
                     class="card__time"
                     type="text"
-                    placeholder="11:15 PM"
+                    placeholder="${task.deadlineDate[1]}"
                     name="time"
-                    value="11:15 PM"
+                    value="${task.deadlineDate[1]}"
                   />
                 </label>
               </fieldset>
@@ -142,48 +143,7 @@ export default (task) => `
             </div>
             <div class="card__hashtag">
               <div class="card__hashtag-list">
-                <span class="card__hashtag-inner">
-                  <input
-                    type="hidden"
-                    name="hashtag"
-                    value="repeat"
-                    class="card__hashtag-hidden-input"
-                  />
-                  <button type="button" class="card__hashtag-name">
-                    #repeat
-                  </button>
-                  <button type="button" class="card__hashtag-delete">
-                    delete
-                  </button>
-                </span>
-                <span class="card__hashtag-inner">
-                  <input
-                    type="hidden"
-                    name="hashtag"
-                    value="repeat"
-                    class="card__hashtag-hidden-input"
-                  />
-                  <button type="button" class="card__hashtag-name">
-                    #cinema
-                  </button>
-                  <button type="button" class="card__hashtag-delete">
-                    delete
-                  </button>
-                </span>
-                <span class="card__hashtag-inner">
-                  <input
-                    type="hidden"
-                    name="hashtag"
-                    value="repeat"
-                    class="card__hashtag-hidden-input"
-                  />
-                  <button type="button" class="card__hashtag-name">
-                    #entertaiment
-                  </button>
-                  <button type="button" class="card__hashtag-delete">
-                    delete
-                  </button>
-                </span>
+                ${task.tagsMarkdown()}
               </div>
               <label>
                 <input
