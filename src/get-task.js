@@ -27,7 +27,7 @@ const hashtagsList = [
 
 export const getTask = () => ({
   title: titleList[Math.floor(Math.random() * titleList.length)],
-  dueDate: Date.now() + 1 + (getRandomNumber(-7,7)) * 24 * 60 * 60 * 1000,
+  dueDate: Date.now() + 1 + (getRandomNumber(-7, 7)) * 24 * 60 * 60 * 1000,
   picture: `http://picsum.photos/100/100?r=${Math.random()}`,
   color: colorList[Math.floor(Math.random() * colorList.length)],
   repeatingDays: {
@@ -39,25 +39,29 @@ export const getTask = () => ({
     'sa': false,
     'su': false,
   },
-  isFavorite: getRandomNumber(0,1) ? 'true' : false,
-  isDone: getRandomNumber(0,1) ? 'true' : false,
+  isFavorite: getRandomNumber(0, 1) ? true : false,
+  isDone: getRandomNumber(0, 1) ? true : false,
   get deadlineDate() {
     const date = new Date(this.dueDate);
-    const options = {day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' };
-    const dateArray = date.toLocaleString('en-EN', options).split(', ');
+    const options = {day: `numeric`, month: `long`, hour: `2-digit`, minute: `2-digit`};
+    const dateArray = date.toLocaleString(`en-EN`, options).split(`, `);
     return dateArray;
   },
   get isDeadlined() {
     const now = Date.now();
     const deadline = this.dueDate;
-    if (deadline <= now) return true;
-    else return false;
+    if (deadline <= now) {
+      return true;
+    }
+    else {
+      return false;
+    }
   },
   get tags() {
     const tags = new Set();
-    const amount = getRandomNumber(0,3);
+    const amount = getRandomNumber(0, 3);
     for (let i = 0; i < amount; i++) {
-      const key = getRandomNumber(0, hashtagsList.length-1);
+      const key = getRandomNumber(0, hashtagsList.length - 1);
       tags.add(hashtagsList[key]);
     }
     return tags;
