@@ -1,4 +1,4 @@
-import {getRandomNumber} from './additional.js'
+import {getRandomNumber} from './utils.js';
 
 const titleList = [
   `Изучить теорию`,
@@ -52,8 +52,7 @@ export const getTask = () => ({
     const deadline = this.dueDate;
     if (deadline <= now) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   },

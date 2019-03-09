@@ -2,7 +2,7 @@ export default (taskList) => {
   return taskList.map((task) => `
     <article class="card
          card--${task.color}
-         ${task.isDeadlined ? 'card--deadline' : ''}
+         ${task.isDeadlined ? `card--deadline` : ``}
          }">
       <form class="card__form" method="get">
         <div class="card__inner">
@@ -15,7 +15,7 @@ export default (taskList) => {
             </button>
             <button
               type="button"
-              class="card__btn card__btn--favorites ${task.isFavorite ? 'card__btn--disabled' : ''} "
+              class="card__btn card__btn--favorites ${task.isFavorite ? `card__btn--disabled` : ``} "
             >
               favorites
             </button>

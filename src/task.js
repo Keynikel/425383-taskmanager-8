@@ -1,4 +1,4 @@
-import {createElement} from './additional';
+import {createElement, timestampToDate} from './utils';
 
 export class Task {
   constructor(data) {
@@ -9,12 +9,26 @@ export class Task {
     this._dueDate = data.dueDate;
     this._repeatingDays = data.repeatingDays;
     this._element = null;
+    this._state = {
+      isDeadline: data.isDeadlined,
+    };
+    this._onEdit = null;
+  }
+
+  _isDeadlined() {
+    return this._state.isDeadline;
+  }
+
+  _isRepeated() {
+    return Object.values(this._repeatingDays).some((it) => it === true);
   }
 
   get template() {
     return `
     <article class="card
          card--${this._color}
+         card--${this._isDeadlined() ? `deadline` : ``}
+         card--${this._isRepeated() ? `repeat` : ``}
     }">
       <form class="card__form" method="get">
         <div class="card__inner">
@@ -58,18 +72,18 @@ export class Task {
                     <input
                       class="card__date"
                       type="text"
-                      placeholder="${this._dueDate}"
+                      placeholder="${timestampToDate(this._dueDate, `date`)}"
                       name="date"
-                      value="${this._dueDate}"
+                      value="${timestampToDate(this._dueDate, `date`)}"
                     />
                   </label>
                   <label class="card__input-deadline-wrap">
                     <input
                       class="card__time"
                       type="text"
-                      placeholder="${this._dueDate}"
+                      placeholder="${timestampToDate(this._dueDate, `time`)}"
                       name="time"
-                      value="${this._dueDate}"
+                      value="${timestampToDate(this._dueDate, `time`)}"
                     />
                   </label>
                 </fieldset>
@@ -78,85 +92,13 @@ export class Task {
                 </button>
                 <fieldset class="card__repeat-days">
                   <div class="card__repeat-days-inner">
-                    <input
-                      class="visually-hidden card__repeat-day-input"
-                      type="checkbox"
-                      id="repeat-mo-4"
-                      name="repeat"
-                      value="mo"
-                    />
-                    <label class="card__repeat-day" for="repeat-mo-4"
-                      >mo</label
-                    >
-                    <input
-                      class="visually-hidden card__repeat-day-input"
-                      type="checkbox"
-                      id="repeat-tu-4"
-                      name="repeat"
-                      value="tu"
-                      checked
-                    />
-                    <label class="card__repeat-day" for="repeat-tu-4"
-                      >tu</label
-                    >
-                    <input
-                      class="visually-hidden card__repeat-day-input"
-                      type="checkbox"
-                      id="repeat-we-4"
-                      name="repeat"
-                      value="we"
-                    />
-                    <label class="card__repeat-day" for="repeat-we-4"
-                      >we</label
-                    >
-                    <input
-                      class="visually-hidden card__repeat-day-input"
-                      type="checkbox"
-                      id="repeat-th-4"
-                      name="repeat"
-                      value="th"
-                    />
-                    <label class="card__repeat-day" for="repeat-th-4"
-                      >th</label
-                    >
-                    <input
-                      class="visually-hidden card__repeat-day-input"
-                      type="checkbox"
-                      id="repeat-fr-4"
-                      name="repeat"
-                      value="fr"
-                      checked
-                    />
-                    <label class="card__repeat-day" for="repeat-fr-4"
-                      >fr</label
-                    >
-                    <input
-                      class="visually-hidden card__repeat-day-input"
-                      type="checkbox"
-                      name="repeat"
-                      value="sa"
-                      id="repeat-sa-4"
-                    />
-                    <label class="card__repeat-day" for="repeat-sa-4"
-                      >sa</label
-                    >
-                    <input
-                      class="visually-hidden card__repeat-day-input"
-                      type="checkbox"
-                      id="repeat-su-4"
-                      name="repeat"
-                      value="su"
-                      checked
-                    />
-                    <label class="card__repeat-day" for="repeat-su-4"
-                      >su</label
-                    >
+                    ${this.renderRepeatsMarkdown()}
                   </div>
                 </fieldset>
               </div>
               <div class="card__hashtag">
                 <div class="card__hashtag-list">
-
+                  ${this.renderTagsMarkdown()}
                 </div>
                 <label>
                   <input
@@ -257,18 +199,79 @@ export class Task {
     `.trim();
   }
 
-  render(container) {
-    if (this._element) {
-      this.unrender(container); // ??
-    }
-    this._element = createElement(this.template); // создаем dom-элемент на основе шаблона и записываем его в свойство класса
-    // todo: устанавить обработчик событий
-    container.appendChild(this._element); // возвращаем (??) созданный элемент
+  get element() {
+    return this._element;
   }
 
-  unrender(container) {
-    // todo: удалить обработчик событий
-    container.removeChild(this._element); // удалить элемент из разметки контейнера
+  render() {
+    this._element = createElement(this.template);
+    this.bind();
+    return this._element;
+  }
+
+  unrender() {
     this._element = null; // удалить ссылку на созданный DOM-элемент.
   }
+
+  update() {
+    if (this._state.isEdit) {
+      return this._element.classList.add(`card--edit`);
+    }
+
+    return this._element.classList.remove(`card--edit`);
+  }
+
+  renderTagsMarkdown() {
+    return [...this._tags].map((elem) => `
+      <span class="card__hashtag-inner">
+      <input type="hidden"
+             name="hashtag"
+             value="repeat"
+             class="card__hashtag-hidden-input"
+      />
+      <button type="button" class="card__hashtag-name">
+        #${elem}
+      </button>
+      <button type="button" class="card__hashtag-delete">
+        delete
+      </button>
+      </span>`).join(``);
+  }
+
+  renderRepeatsMarkdown() {
+    let repeatingMarkdown = ``;
+    for (let day in this._repeatingDays) {
+      if (Object.prototype.hasOwnProperty.call(this._repeatingDays, day)) {
+        repeatingMarkdown += `
+        <input
+          class="visually-hidden card__repeat-day-input"
+          type="checkbox"
+          id="repeat-${day}-4"
+          name="repeat"
+          value="${day}"
+          ${this._repeatingDays[day] ? `checked` : ``}
+        />
+        <label class="card__repeat-day" for="repeat-${day}-4"
+          >${day}</label
+        >
+        `.trim();
+      }
+    }
+    return repeatingMarkdown;
+  }
+
+  bind() {
+    this._element.querySelector(`.card__btn--edit`)
+        .addEventListener(`click`, this._onEditButtonClick.bind(this));
+  }
+
+  _onEditButtonClick() {
+    return typeof this._onEdit === `function` && this._onEdit();
+  }
+
+  set onEdit(fn) {
+    this._onEdit = fn;
+  }
+
+
 }
