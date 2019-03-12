@@ -1,26 +1,20 @@
-import {createElement, timestampToDate} from './utils';
+import {timestampToDate} from './utils';
+import {Task} from './task';
 
-export class TaskEdit {
+export class TaskEdit extends Task {
   constructor(data) {
-    this._color = data.color;
-    this._title = data.title;
-    this._tags = data.tags;
-    this._picture = data.picture;
-    this._dueDate = data.dueDate;
-    this._repeatingDays = data.repeatingDays;
-    this._element = null;
-    this._state = {
-      isDeadline: data.isDeadlined,
-    };
+    super(data);
     this._onSubmit = null;
+    this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
   }
 
-  _isDeadlined() {
-    return this._state.isDeadline;
+  _onSubmitButtonClick(evt) {
+    evt.preventDefault();
+    return typeof this._onSubmit === `function` && this._onSubmit();
   }
 
-  _isRepeated() {
-    return Object.values(this._repeatingDays).some((it) => it === true);
+  set onSubmit(fn) {
+    this._onSubmit = fn;
   }
 
   get template() {
@@ -199,71 +193,13 @@ export class TaskEdit {
     `.trim();
   }
 
-  get element() {
-    return this._element;
-  }
-
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this._element = null; // удалить ссылку на созданный DOM-элемент.
-  }
-
-  renderTagsMarkdown() {
-    return [...this._tags].map((elem) => `
-      <span class="card__hashtag-inner">
-      <input type="hidden"
-             name="hashtag"
-             value="repeat"
-             class="card__hashtag-hidden-input"
-      />
-      <button type="button" class="card__hashtag-name">
-        #${elem}
-      </button>
-      <button type="button" class="card__hashtag-delete">
-        delete
-      </button>
-      </span>`).join(``);
-  }
-
-  renderRepeatsMarkdown() {
-    let repeatingMarkdown = ``;
-    for (let day in this._repeatingDays) {
-      if (Object.prototype.hasOwnProperty.call(this._repeatingDays, day)) {
-        repeatingMarkdown += `
-        <input
-          class="visually-hidden card__repeat-day-input"
-          type="checkbox"
-          id="repeat-${day}-4"
-          name="repeat"
-          value="${day}"
-          ${this._repeatingDays[day] ? `checked` : ``}
-        />
-        <label class="card__repeat-day" for="repeat-${day}-4"
-          >${day}</label
-        >
-        `.trim();
-      }
-    }
-    return repeatingMarkdown;
-  }
-
   bind() {
     this._element.querySelector(`.card__form`)
-       .addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+      .addEventListener(`submit`, this._onSubmitButtonClick);
   }
 
-  _onSubmitButtonClick(evt) {
-    evt.preventDefault();
-    return typeof this._onSubmit === `function` && this._onSubmit();
+  unbind() {
+    this._element.querySelector(`.card__form`)
+      .removeEventListener(`submit`, this._onSubmitButtonClick);
   }
-
-  set onSubmit(fn) {
-    this._onSubmit = fn;
-  }
-
 }
