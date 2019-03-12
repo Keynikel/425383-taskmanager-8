@@ -193,13 +193,14 @@ export class TaskEdit extends Task {
     `.trim();
   }
 
-  bind() {
+  createListeners() {
     this._element.querySelector(`.card__form`)
       .addEventListener(`submit`, this._onSubmitButtonClick);
   }
 
-  unbind() {
+  removeListeners() {
     this._element.querySelector(`.card__form`)
       .removeEventListener(`submit`, this._onSubmitButtonClick);
   }
+
 }

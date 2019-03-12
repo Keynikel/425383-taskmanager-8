@@ -19,12 +19,12 @@ export class Component {
 
   render() {
     this._element = createElement(this.template);
-    this.bind();
+    this.createListeners();
     return this._element;
   }
 
   unrender() {
-    this.unbind();
+    this.removeListeners();
     this._element.remove();
     this._element = null;
   }
