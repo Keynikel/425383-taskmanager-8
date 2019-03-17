@@ -32,8 +32,8 @@ export const getTask = () => ({
   color: colorList[Math.floor(Math.random() * colorList.length)],
   repeatingDays: {
     'mo': true,
-    'tu': true,
-    'we': true,
+    'tu': false,
+    'we': false,
     'th': false,
     'fr': false,
     'sa': false,
@@ -60,7 +60,7 @@ export const getTask = () => ({
     const tags = new Set();
     const amount = 2;
     for (let i = 0; i < amount; i++) {
-      //const key = getRandomNumber(0, hashtagsList.length - 1);
+      // const key = getRandomNumber(0, hashtagsList.length - 1);
       tags.add(hashtagsList[i]);
     }
     return tags;

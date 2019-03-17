@@ -6,11 +6,57 @@ export class TaskEdit extends Task {
     super(data);
     this._onSubmit = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
+    this._onChangeDate = this._onChangeDate.bind(this);
+    this._onChangeRepeated = this._onChangeRepeated.bind(this);
+    this._onChangeColor = this._onChangeColor.bind(this);
+  }
+
+  _partialUpdate() {
+    this._element.innerHTML = this.template;
+  }
+
+  _processForm(formData) {
+    const entry = {
+      title: ``,
+      color: ``,
+      tags: new Set(),
+      dueDate: new Date(),
+      repeatingDays: {
+        'mo': false,
+        'tu': false,
+        'we': false,
+        'th': false,
+        'fr': false,
+        'sa': false,
+        'su': false,
+      }
+    };
   }
 
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
-    return typeof this._onSubmit === `function` && this._onSubmit();
+    const formData = new FormData(this._element.querySelector(`.card__form`));
+    const newData = this._processForm(formData);
+    typeof this._onSubmit === `function` && this._onSubmit(newData);
+    this.update(newData);
+  }
+
+  _onChangeDate() {
+    this._state.isDate = !this._state.isDate;
+    this.removeListeners();
+    this._partialUpdate();
+    this.createListeners();
+  }
+
+  _onChangeRepeated() {
+    this._state.isRepeated = !this._state.isRepeated;
+    this.removeListeners();
+    this._partialUpdate();
+    this.createListeners();
+  }
+
+  _onChangeColor() {
+
   }
 
   set onSubmit(fn) {
@@ -21,7 +67,7 @@ export class TaskEdit extends Task {
     return `
     <article class="card card--edit
          card--${this._color}
-         card--${this._isDeadlined() ? `deadline` : ``}
+         card--${this._state.isDeadline ? `deadline` : ``}
          card--${this._isRepeated() ? `repeat` : ``}
     }">
       <form class="card__form" method="get">
@@ -59,9 +105,9 @@ export class TaskEdit extends Task {
             <div class="card__details">
               <div class="card__dates">
                 <button class="card__date-deadline-toggle" type="button">
-                  date: <span class="card__date-status">yes</span>
+                  date: <span class="card__date-status">  ${this._state.isDate ? `yes` : `no`}</span>
                 </button>
-                <fieldset class="card__date-deadline">
+                <fieldset class="card__date-deadline" ${!this._state.isDate && `disabled`}>
                   <label class="card__input-deadline-wrap">
                     <input
                       class="card__date"
@@ -82,9 +128,12 @@ export class TaskEdit extends Task {
                   </label>
                 </fieldset>
                 <button class="card__repeat-toggle" type="button">
-                  repeat:<span class="card__repeat-status">yes</span>
+                  repeat:
+                    <span class="card__repeat-status">
+                      ${this._state.isRepeated ? `yes` : `no`}
+                    </span>
                 </button>
-                <fieldset class="card__repeat-days">
+                <fieldset class="card__repeat-days" ${!this._state.isRepeated && `disabled`}>
                   <div class="card__repeat-days-inner">
                     ${this.renderRepeatsMarkdown()}
                   </div>
@@ -193,14 +242,35 @@ export class TaskEdit extends Task {
     `.trim();
   }
 
+  update(data) {
+    this._color = data.color;
+    this._title = data.title;
+    this._tags = data.tags;
+    this._picture = data.picture;
+    this._dueDate = data.dueDate;
+    this._repeatingDays = data.repeatingDays;
+  }
+
   createListeners() {
     this._element.querySelector(`.card__form`)
       .addEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.card__date-deadline-toggle`)
+        .addEventListener(`click`, this._onChangeDate);
+    this._element.querySelector(`.card__repeat-toggle`)
+        .addEventListener(`click`, this._onChangeRepeated);
+    this._element.querySelector(`.card__color`)
+        .addEventListener(`click`, this._onChangeColor);
   }
 
   removeListeners() {
     this._element.querySelector(`.card__form`)
       .removeEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.card__date-deadline-toggle`)
+          .removeEventListener(`click`, this._onChangeDate);
+    this._element.querySelector(`.card__repeat-toggle`)
+        .removeEventListener(`click`, this._onChangeRepeated);
+    this._element.querySelector(`.card__color`)
+        .addEventListener(`click`, this._onChangeColor);
   }
 
 }

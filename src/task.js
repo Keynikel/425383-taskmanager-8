@@ -12,18 +12,20 @@ export class Task extends Component {
     this._repeatingDays = data.repeatingDays;
     this._state = {
       isDeadline: data.isDeadlined,
+      isDate: this._isDate(),
+      isRepeated: this._isRepeated()
     };
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
 
   }
 
-  _isDeadlined() {
-    return this._state.isDeadline;
-  }
-
   _isRepeated() {
     return Object.values(this._repeatingDays).some((it) => it === true);
+  }
+
+  _isDate() {
+    return this._dueDate === `` ? false : true;
   }
 
   _onEditButtonClick() {
@@ -38,7 +40,7 @@ export class Task extends Component {
     return `
       <article class="card
            card--${this._color}
-           card--${this._isDeadlined() ? `deadline` : ``}
+           card--${this._state.isDeadline ? `deadline` : ``}
            card--${this._isRepeated() ? `repeat` : ``}
       }">
         <form class="card__form" method="get">
@@ -71,39 +73,8 @@ export class Task extends Component {
             </div>
             <div class="card__settings">
               <div class="card__details">
-                <div class="card__dates">
-                  <button class="card__date-deadline-toggle" type="button">
-                    date: <span class="card__date-status">yes</span>
-                  </button>
-                  <fieldset class="card__date-deadline">
-                    <label class="card__input-deadline-wrap">
-                      <input
-                        class="card__date"
-                        type="text"
-                        placeholder="${timestampToDate(this._dueDate, `date`)}"
-                        name="date"
-                        value="${timestampToDate(this._dueDate, `date`)}"
-                      />
-                    </label>
-                    <label class="card__input-deadline-wrap">
-                      <input
-                        class="card__time"
-                        type="text"
-                        placeholder="${timestampToDate(this._dueDate, `time`)}"
-                        name="time"
-                        value="${timestampToDate(this._dueDate, `time`)}"
-                      />
-                    </label>
-                  </fieldset>
-                  <button class="card__repeat-toggle" type="button">
-                    repeat:<span class="card__repeat-status">yes</span>
-                  </button>
-                  <fieldset class="card__repeat-days">
-                    <div class="card__repeat-days-inner">
-                      ${this.renderRepeatsMarkdown()}
-                    </div>
-                  </fieldset>
-                </div>
+               ${this._state.isDate ? this.renderDatesMarkdown() : `` }
+
                 <div class="card__hashtag">
                   <div class="card__hashtag-list">
                     ${this.renderTagsMarkdown()}
@@ -134,7 +105,7 @@ export class Task extends Component {
           </div>
         </form>
       </article>
-      `.trim();
+    `.trim();
   }
 
   createListeners() {
@@ -145,6 +116,15 @@ export class Task extends Component {
   removeListeners() {
     this._element.querySelector(`.card__btn--edit`)
         .removeEventListener(`click`, this._onEditButtonClick);
+  }
+
+  update(data) {
+    this._color = data.color;
+    this._title = data.title;
+    this._tags = data.tags;
+    this._picture = data.picture;
+    this._dueDate = data.dueDate;
+    this._repeatingDays = data.repeatingDays;
   }
 
   renderTagsMarkdown() {
@@ -162,6 +142,46 @@ export class Task extends Component {
           delete
         </button>
         </span>`).join(``);
+  }
+
+  renderDatesMarkdown() {
+    return `
+      <div class="card__dates">
+        <button class="card__date-deadline-toggle" type="button">
+          date:
+            <span class="card__date-status">
+              ${this._state.isDate ? `yes` : `no`}
+            </span>
+        </button>
+        <fieldset class="card__date-deadline">
+          <label class="card__input-deadline-wrap">
+            <input
+              class="card__date"
+              type="text"
+              placeholder="${timestampToDate(this._dueDate, `date`)}"
+              name="date"
+              value="${timestampToDate(this._dueDate, `date`)}"
+            />
+          </label>
+          <label class="card__input-deadline-wrap">
+            <input
+              class="card__time"
+              type="text"
+              placeholder="${timestampToDate(this._dueDate, `time`)}"
+              name="time"
+              value="${timestampToDate(this._dueDate, `time`)}"
+            />
+          </label>
+        </fieldset>
+        <button class="card__repeat-toggle" type="button">
+          repeat:<span class="card__repeat-status">yes</span>
+        </button>
+        <fieldset class="card__repeat-days">
+          <div class="card__repeat-days-inner">
+            ${this.renderRepeatsMarkdown()}
+          </div>
+        </fieldset>
+      </div>`;
   }
 
   renderRepeatsMarkdown() {
